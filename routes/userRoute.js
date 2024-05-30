@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
         .send({ message: "Password is incorrect", success: false });
     } else {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1d",
+        expiresIn: "",
       });
       res
         .status(200)
@@ -262,4 +262,91 @@ router.get("/get-appointments-by-user-id", authMiddleware, async (req, res) => {
     });
   }
 });
+
+// serach 
+
+
+// router.get("/search", authMiddleware, async (req, res) => {
+//   try {
+//     const { q } = req.query;
+//     if (!q) {
+//       return res.status(400).send('Query parameter "q" is required');
+//     }
+    
+//     const doctors = await Doctor.find({
+//       $and: [
+//         { status: "approved" },
+//         {
+//           $or: [
+//             { firstName: { $regex: q, $options: "i" } },
+//             { lastName: { $regex: q, $options: "i" } },
+//             { specialization: { $regex: q, $options: "i" } },
+//             { email: { $regex: q, $options: "i" } }
+//           ]
+//         }
+//       ]
+//     });
+    
+
+//     if (doctors.length === 0) {
+//       return res.status(200).send({
+//         message: "No doctors found",
+//         success: false
+//       });
+//     }
+
+//     res.status(200).send({
+//       message: "Doctors found successfully",
+//       success: true,
+//       data: doctors
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({
+//       message: "Error searching for doctors",
+//       success: false,
+//       error
+//     });
+//   }
+// });
+
+router.get("/search", authMiddleware, async (req, res) => {
+  try {
+    const { q } = req.query;
+    if (!q) {
+      return res.status(400).send('Query parameter "q" is required');
+    }
+    
+    const doctor = await Doctor.findOne({
+      $or: [
+        { firstName: { $regex: q, $options: "i" } },
+        { lastName: { $regex: q, $options: "i" } },
+        { specialization: { $regex: q, $options: "i" } }
+      ]
+    });
+    
+
+    if (!doctor) {
+      return res.status(200).send({
+        message: "No doctor found",
+        success: false
+      });
+    }
+
+    res.status(200).send({
+      message: "Doctor found successfully",
+      success: true,
+      data: doctor
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "Error searching for doctor",
+      success: false,
+      error
+    });
+  }
+});
+
+
 module.exports = router;

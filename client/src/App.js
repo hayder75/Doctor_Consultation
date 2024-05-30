@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Main from "./pages/Main";
 import { Button } from "antd";
 import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
@@ -44,6 +45,15 @@ function App() {
             </PublicRoute>
           }
         />
+        <Route
+          path="/homepage"
+          element={
+            <PublicRoute>
+              <Main />
+            </PublicRoute>
+          }
+        />
+
         <Route
           path="/"
           element={

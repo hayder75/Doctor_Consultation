@@ -76,6 +76,18 @@ router.get(
   }
 );
 
+// search 
+router.get("/search", (req, res) => {
+  const { q } = req.query;
+  console.log("Search query:", q); // Add this line to debug
+  if (!q) {
+    return res.status(400).send('Query parameter "q" is required');
+  }
+  res.send(`You searched for: ${q}`);
+});
+
+
+
 router.post("/change-appointment-status", authMiddleware, async (req, res) => {
   try {
     const { appointmentId, status } = req.body;
