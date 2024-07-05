@@ -4,6 +4,7 @@ require("dotenv").config();
 const dbConfig = require("./config/dbConfig");
 app.use(express.json());
 const userRoute = require("./routes/userRoute");
+const messageRoute = require("./routes/messageRoute");
 const adminRoute = require("./routes/adminRoute");
 const doctorRoute = require("./routes/doctorsRoute");
 const path = require("path");
@@ -11,6 +12,8 @@ const path = require("path");
 app.use("/api/user", userRoute);
 app.use("/api/admin", adminRoute);
 app.use("/api/doctor", doctorRoute);
+app.use("/api/message", messageRoute);
+
 
 if (process.env.NODE_ENV === "production") {
   app.use("/", express.static("client/build"));

@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { showLoading, hideLoading } from "../redux/alertsSlice";
 import SearchBar from "../components/SearchBar"; // Import the SearchBar component
 
+
 function Home() {
   const [doctors, setDoctors] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -41,6 +42,7 @@ function Home() {
 
   return (
     <Layout>
+     
       <SearchBar setSearchResults={handleSearch} /> {/* Add the SearchBar component */}
       <Row gutter={20}>
         {displayedDoctors.map((doctor) => (

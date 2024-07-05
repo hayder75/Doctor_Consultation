@@ -48,11 +48,12 @@ router.post("/login", async (req, res) => {
         .send({ message: "Password is incorrect", success: false });
     } else {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "",
+        expiresIn: '1d',
       });
       res
         .status(200)
-        .send({ message: "Login successful", success: true, data: token });
+        .send({ message: "Login successful", success: true, data: token , userId: user._id })
+        //.json({ userId: user._id, name: user.name });
     }
   } catch (error) {
     console.log(error);

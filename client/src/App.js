@@ -2,7 +2,7 @@ import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Main from "./pages/Main";
+import LandingPage from "./pages/LandingPage";
 import { Button } from "antd";
 import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
@@ -10,14 +10,16 @@ import { useSelector } from "react-redux";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import ApplyDoctor from "./pages/ApplyDoctor";
+import RegisterDoctor from "./pages/RegisterDoctor";
 import Notifications from "./pages/Notifications";
 import Userslist from "./pages/Admin/Userslist";
 import DoctorsList from "./pages/Admin/DoctorsList";
 import Profile from "./pages/Doctor/Profile";
 import BookAppointment from "./pages/BookAppointment";
 import Appointments from "./pages/Appointments";
-import DoctorAppointments from "./pages/Doctor/DoctorAppointments";
+import ChatPage from "./pages/Chatpage";
 
+import DoctorAppointments from "./pages/Doctor/DoctorAppointments";
 function App() {
   const { loading } = useSelector((state) => state.alerts);
   return (
@@ -37,7 +39,23 @@ function App() {
             </PublicRoute>
           }
         />
-        <Route
+        {/* <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        /> */}
+         {/* <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <LandingPage />
+            </PublicRoute>
+          }
+        /> */}
+         <Route
           path="/register"
           element={
             <PublicRoute>
@@ -46,14 +64,13 @@ function App() {
           }
         />
         <Route
-          path="/homepage"
+          path="/register-doctor"
           element={
             <PublicRoute>
-              <Main />
+              <RegisterDoctor />
             </PublicRoute>
           }
         />
-
         <Route
           path="/"
           element={
@@ -92,6 +109,14 @@ function App() {
           element={
             <ProtectedRoute>
               <DoctorsList />
+            </ProtectedRoute>
+          }
+        />
+      <Route
+          path="/chat"
+          element={
+            <ProtectedRoute>
+              <ChatPage />
             </ProtectedRoute>
           }
         />

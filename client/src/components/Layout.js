@@ -1,3 +1,4 @@
+// src/components/Layout.js
 import React, { useState } from "react";
 import "../layout.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -10,6 +11,7 @@ function Layout({ children }) {
 
   const navigate = useNavigate();
   const location = useLocation();
+
   const userMenu = [
     {
       name: "Home",
@@ -25,7 +27,12 @@ function Layout({ children }) {
       name: "Apply Doctor",
       path: "/apply-doctor",
       icon: "ri-hospital-line",
-    }
+    },
+    {
+      name: "Chat",
+      path: "/chat",
+      icon: "ri-chat-1-line",
+    },
   ];
 
   const doctorMenu = [
@@ -43,6 +50,11 @@ function Layout({ children }) {
       name: "Profile",
       path: `/doctor/profile/${user?._id}`,
       icon: "ri-user-line",
+    },
+    {
+      name: "Chat",
+      path: "/chat",
+      icon: "ri-chat-1-line",
     },
   ];
 
@@ -67,10 +79,16 @@ function Layout({ children }) {
       path: "/profile",
       icon: "ri-user-line",
     },
+    {
+      name: "Chat",
+      path: "/chat",
+      icon: "ri-chat-1-line",
+    },
   ];
 
   const menuToBeRendered = user?.isAdmin ? adminMenu : user?.isDoctor ? doctorMenu : userMenu;
   const role = user?.isAdmin ? "Admin" : user?.isDoctor ? "Doctor" : "User";
+
   return (
     <div className="main">
       <div className="d-flex layout">
@@ -81,13 +99,12 @@ function Layout({ children }) {
           </div>
 
           <div className="menu">
-            {menuToBeRendered.map((menu) => {
+            {menuToBeRendered.map((menu, index) => {
               const isActive = location.pathname === menu.path;
               return (
                 <div
-                  className={`d-flex menu-item ${
-                    isActive && "active-menu-item"
-                  }`}
+                  key={index}
+                  className={`d-flex menu-item ${isActive && "active-menu-item"}`}
                 >
                   <i className={menu.icon}></i>
                   {!collapsed && <Link to={menu.path}>{menu.name}</Link>}
