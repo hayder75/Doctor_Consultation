@@ -5,7 +5,7 @@ import { Col, Row } from "antd";
 import Doctor from "../components/Doctor";
 import { useDispatch, useSelector } from "react-redux";
 import { showLoading, hideLoading } from "../redux/alertsSlice";
-import SearchBar from "../components/SearchBar"; // Import the SearchBar component
+import SearchBar from "../SearchBar"; // Import the SearchBar component
 
 
 function Home() {

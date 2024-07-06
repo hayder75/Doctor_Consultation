@@ -48,12 +48,17 @@ router.post("/login", async (req, res) => {
         .send({ message: "Password is incorrect", success: false });
     } else {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: '1d',
+        expiresIn: "1d",
       });
       res
         .status(200)
-        .send({ message: "Login successful", success: true, data: token , userId: user._id })
-        //.json({ userId: user._id, name: user.name });
+        .send({
+          message: "Login successful",
+          success: true,
+          data: token,
+          userId: user._id,
+        });
+      //.json({ userId: user._id, name: user.name });
     }
   } catch (error) {
     console.log(error);
@@ -165,7 +170,7 @@ router.post("/delete-all-notifications", authMiddleware, async (req, res) => {
   }
 });
 
-router.get("/get-all-approved-doctors", authMiddleware, async (req, res) => {
+router.get("/get-all-approved-doctors",authMiddleware, async (req, res) => {
   try {
     const doctors = await Doctor.find({ status: "approved" });
     res.status(200).send({
@@ -173,6 +178,25 @@ router.get("/get-all-approved-doctors", authMiddleware, async (req, res) => {
       success: true,
       data: doctors,
     });
+   
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "Error applying doctor account",
+      success: false,
+      error,
+    });
+  }
+});
+router.get("/get-all-approved-doctor", async (req, res) => {
+  try {
+    const doctors = await Doctor.find({ status: "approved" });
+    // res.status(200).send({
+    //   message: "Doctors fetched successfully",
+    //   success: true,
+    //   data: doctors,
+    // });
+    res.status(200).json(doctors)
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -264,8 +288,7 @@ router.get("/get-appointments-by-user-id", authMiddleware, async (req, res) => {
   }
 });
 
-// serach 
-
+// serach
 
 // router.get("/search", authMiddleware, async (req, res) => {
 //   try {
@@ -273,7 +296,7 @@ router.get("/get-appointments-by-user-id", authMiddleware, async (req, res) => {
 //     if (!q) {
 //       return res.status(400).send('Query parameter "q" is required');
 //     }
-    
+
 //     const doctors = await Doctor.find({
 //       $and: [
 //         { status: "approved" },
@@ -287,7 +310,6 @@ router.get("/get-appointments-by-user-id", authMiddleware, async (req, res) => {
 //         }
 //       ]
 //     });
-    
 
 //     if (doctors.length === 0) {
 //       return res.status(200).send({
@@ -317,37 +339,52 @@ router.get("/search", authMiddleware, async (req, res) => {
     if (!q) {
       return res.status(400).send('Query parameter "q" is required');
     }
-    
+
     const doctor = await Doctor.findOne({
       $or: [
         { firstName: { $regex: q, $options: "i" } },
         { lastName: { $regex: q, $options: "i" } },
-        { specialization: { $regex: q, $options: "i" } }
-      ]
+        { specialization: { $regex: q, $options: "i" } },
+      ],
     });
-    
 
     if (!doctor) {
       return res.status(200).send({
         message: "No doctor found",
-        success: false
+        success: false,
       });
     }
 
     res.status(200).send({
       message: "Doctor found successfully",
       success: true,
-      data: doctor
+      data: doctor,
     });
   } catch (error) {
     console.log(error);
     res.status(500).send({
       message: "Error searching for doctor",
       success: false,
-      error
+      error,
     });
   }
 });
 
+router.get("/me", authMiddleware, async (req, res) => {
+  try {
+    const user = await Doctor.findOne({ userId: req.body.userId });
+    if (!user) {
+      return res
+        .status(404)
+        .send({ message: "User not found", success: false });
+    }
+    res.status(200).send({ data: user.status, success: true });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .send({ message: "Error fetching user data", success: false, error });
+  }
+});
 
 module.exports = router;
