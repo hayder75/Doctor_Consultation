@@ -5,19 +5,18 @@ const Conversation = require("../models/conversationModel");
 const Message = require("../models/messageModel");
 
 router.post("/send/:id", authMiddleware, async (req, res) => {
-  // res.send({ message: "Login successful", success: true , userId:  req.body.userId })
   try {
     const { message } = req.body;
     const { id: receiverId } = req.params;
     const senderId = req.body.userId;
 
     let conversation = await Conversation.findOne({
-      partcipants: { $all: [senderId, receiverId] },
+      participants: { $all: [senderId, receiverId] },
     });
 
     if (!conversation) {
       conversation = await Conversation.create({
-        partcipants: [senderId, receiverId],
+        participants: [senderId, receiverId],
       });
     }
 
@@ -25,17 +24,13 @@ router.post("/send/:id", authMiddleware, async (req, res) => {
       senderId,
       receiverId,
       message,
-      //conversationId: conversatio._id
     });
 
     if (newMessage) {
       conversation.messages.push(newMessage._id);
     }
 
-    // await conversation.save();
-    // await newMessage.save();
-
-    await Promise.all([conversation.save(),newMessage.save()])
+    await Promise.all([conversation.save(), newMessage.save()]);
 
     res.status(200).json(newMessage);
   } catch (error) {
@@ -44,25 +39,23 @@ router.post("/send/:id", authMiddleware, async (req, res) => {
   }
 });
 
-
 router.get("/:id", authMiddleware, async (req, res) => {
-
   try {
-    const {id:userToChatId}= req.params;
+    const { id: userToChatId } = req.params;
     const senderId = req.body.userId;
 
     const conversation = await Conversation.findOne({
-      partcipants:{$all : [senderId,userToChatId]},
+      participants: { $all: [senderId, userToChatId] },
     }).populate("messages");
 
-    if(!conversation) return res.status(200).json([])
+    if (!conversation) return res.status(200).json([]);
 
     const messages = conversation.messages;
     res.status(200).json(messages);
-
   } catch (error) {
-    
+    console.log(error.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
+});
 
-})
 module.exports = router;
