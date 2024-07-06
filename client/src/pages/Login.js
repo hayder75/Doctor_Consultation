@@ -1,17 +1,16 @@
 import { Button, Form, Input } from "antd";
-import React, { useContext } from "react";
+import React from "react";
 import toast from "react-hot-toast";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { hideLoading, showLoading } from "../redux/alertsSlice";
-import { AuthContext } from "../context/AuthContext";
+import { useAuthContext } from "../context/AuthContext";
 
 function Login() {
-  const { setAuthUser } = useContext(AuthContext); // Accessing setAuthUser from AuthContext
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
+  const { setAuthUser } = useAuthContext();
 
   const onFinish = async (values) => {
     try {
@@ -20,9 +19,9 @@ function Login() {
       dispatch(hideLoading());
       if (response.data.success) {
         toast.success(response.data.message);
-        localStorage.setItem("token", response.data.data); // Assuming response.data.data contains the token
-        const userData = await fetchUserData(response.data.data); // Fetch user data after login
-        setAuthUser(userData); // Set authenticated user in AuthContext
+        localStorage.setItem("token", response.data.data);
+        localStorage.setItem("chat-user", JSON.stringify(response.data.user));
+        setAuthUser(response.data.user);
         navigate("/");
       } else {
         toast.error(response.data.message);
@@ -30,24 +29,6 @@ function Login() {
     } catch (error) {
       dispatch(hideLoading());
       toast.error("Something went wrong");
-    }
-  };
-
-  const fetchUserData = async (token) => {
-    try {
-      const response = await axios.get("/api/user/profile", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if (response.data.success) {
-        return response.data.data; // Assuming response.data.data contains the user object
-      } else {
-        throw new Error(response.data.message);
-      }
-    } catch (error) {
-      toast.error("Failed to fetch user data");
-      throw error;
     }
   };
 

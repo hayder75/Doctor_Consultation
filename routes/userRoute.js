@@ -107,6 +107,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
+
 router.post("/get-user-info-by-id", authMiddleware, async (req, res) => {
   try {
     const user = await User.findOne({ _id: req.body.userId });
@@ -117,6 +118,7 @@ router.post("/get-user-info-by-id", authMiddleware, async (req, res) => {
         .send({ message: "User does not exist", success: false });
     } else {
       res.status(200).send({
+        message:"current user0",
         success: true,
         data: user,
       });

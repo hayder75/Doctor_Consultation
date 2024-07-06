@@ -111,6 +111,7 @@ function Layout({ children }) {
                 </div>
               );
             })}
+
             <div
               className={`d-flex menu-item `}
               onClick={() => {
@@ -121,6 +122,7 @@ function Layout({ children }) {
               <i className="ri-logout-circle-line"></i>
               {!collapsed && <Link to="/login">Logout</Link>}
             </div>
+            
           </div>
         </div>
 
