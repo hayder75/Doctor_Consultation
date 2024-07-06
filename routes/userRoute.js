@@ -2,11 +2,50 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/userModel");
 const Doctor = require("../models/doctorModel");
+const Conversation = require("../models/conversationModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");
 const Appointment = require("../models/appointmentModel");
 const moment = require("moment");
+
+
+
+
+router.get("/get-conversations", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await User.findById(userId);
+
+    let conversations = [];
+
+    if (user.isDoctor) {
+      // Fetch conversations where the doctor is a participant
+      conversations = await Conversation.find({ participants: userId })
+        .populate("participants", "firstName lastName")
+        .exec();
+    } else {
+      // Fetch conversations where the user is a participant
+      conversations = await Conversation.find({ participants: userId })
+        .populate("participants", "firstName lastName")
+        .exec();
+    }
+
+    res.status(200).send({
+      message: "Conversations fetched successfully",
+      success: true,
+      data: conversations,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "Error fetching conversations",
+      success: false,
+      error,
+    });
+  }
+});
+
 
 router.post("/register", async (req, res) => {
   try {
