@@ -1,8 +1,7 @@
-// backend/models/Message.js
 const mongoose = require("mongoose");
 
 const conversationSchema = new mongoose.Schema({
-  particpants: [
+  participants: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
@@ -12,11 +11,11 @@ const conversationSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "messages",
-      default:[],
+      default: [],
     },
   ],
   timestamp: { type: Date, default: Date.now },
 });
 
-const conversationModel= mongoose.model("Conversation", conversationSchema); // Replace "Messages" with your actual model name
+const conversationModel = mongoose.model("Conversation", conversationSchema);
 module.exports = conversationModel;
