@@ -66,6 +66,7 @@ function Layout({ children }) {
     },
     {
       name: "Users",
+
       path: "/admin/userslist",
       icon: "ri-user-line",
     },
@@ -79,14 +80,18 @@ function Layout({ children }) {
       path: "/profile",
       icon: "ri-user-line",
     },
-    {
-      name: "Chat",
-      path: "/chat",
-      icon: "ri-chat-1-line",
-    },
+    // {
+    //   name: "Chat",
+    //   path: "/chat",
+    //   icon: "ri-chat-1-line",
+    // },
   ];
 
-  const menuToBeRendered = user?.isAdmin ? adminMenu : user?.isDoctor ? doctorMenu : userMenu;
+  const menuToBeRendered = user?.isAdmin
+    ? adminMenu
+    : user?.isDoctor
+    ? doctorMenu
+    : userMenu;
   const role = user?.isAdmin ? "Admin" : user?.isDoctor ? "Doctor" : "User";
 
   return (
@@ -94,7 +99,8 @@ function Layout({ children }) {
       <div className="d-flex layout">
         <div className="sidebar">
           <div className="sidebar-header">
-            <h1 className="logo">SH</h1>
+            <h1 className="logo"></h1>
+            <br />
             <h1 className="role">{role}</h1>
           </div>
 
@@ -104,7 +110,9 @@ function Layout({ children }) {
               return (
                 <div
                   key={index}
-                  className={`d-flex menu-item ${isActive && "active-menu-item"}`}
+                  className={`d-flex menu-item ${
+                    isActive && "active-menu-item"
+                  }`}
                 >
                   <i className={menu.icon}></i>
                   {!collapsed && <Link to={menu.path}>{menu.name}</Link>}
@@ -115,6 +123,7 @@ function Layout({ children }) {
             <div
               className={`d-flex menu-item `}
               onClick={() => {
+                localStorage.removeItem("token");
                 localStorage.clear();
                 navigate("/login");
               }}
@@ -122,7 +131,6 @@ function Layout({ children }) {
               <i className="ri-logout-circle-line"></i>
               {!collapsed && <Link to="/login">Logout</Link>}
             </div>
-            
           </div>
         </div>
 
@@ -149,7 +157,7 @@ function Layout({ children }) {
               </Badge>
 
               <Link className="anchor mx-2" to="/profile">
-                {user?.name}
+                {user?.firstName}
               </Link>
             </div>
           </div>

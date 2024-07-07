@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Layout from "../components/Layout";
-import { Col, Row } from "antd";
+import { Col, Row, Input } from "antd";
 import Doctor from "../components/Doctor";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { showLoading, hideLoading } from "../redux/alertsSlice";
-import SearchBar from "../SearchBar"; // Import the SearchBar component
 
+const { Search } = Input;
 
 function Home() {
   const [doctors, setDoctors] = useState([]);
@@ -27,6 +27,7 @@ function Home() {
       }
     } catch (error) {
       dispatch(hideLoading());
+      console.error("Error fetching doctors:", error);
     }
   };
 
@@ -34,23 +35,69 @@ function Home() {
     getData();
   }, []);
 
-  const handleSearch = (results) => {
-    setSearchResults(results);
+  const handleSearch = async (value) => {
+    if (!value) {
+     getData()
+      return;
+    }
+    try {
+      dispatch(showLoading());
+      const token = localStorage.getItem("token");
+      const response = await axios.get(`/api/user/search?q=${value}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      dispatch(hideLoading());
+       console.log(response)
+      if (response.data.success) {
+        setDoctors(response.data.data);
+        console.log("Search Results:", response.data.data);
+        
+      } else {
+        setSearchResults([]);
+      }
+     // console.log("Search Results:", response.data.data); // Debugging log
+    } catch (error) {
+      dispatch(hideLoading());
+      console.error("Error searching for doctors:", error);
+      setSearchResults([]);
+    }
   };
 
-  const displayedDoctors = searchResults.length > 0 ? searchResults : doctors;
+ 
 
+  // useEffect(() => {
+  //   console.log("Doctors:", doctors);
+  //   console.log("Search Results:", searchResults);
+  //   console.log("Displayed Doctors:", displayedDoctors);
+  // }, [doctors, searchResults, displayedDoctors]);
+//console.log(doctors)
   return (
-    <Layout>
-     
-      <SearchBar setSearchResults={handleSearch} /> {/* Add the SearchBar component */}
+    <Layout> 
+      <div style={{ padding: '20px' }}>
+        <Search
+          placeholder="Search for doctors by name or specialization"
+          enterButton="Search"
+          size="large"
+          onSearch={handleSearch}
+        />
+      </div>
       <Row gutter={20}>
-        {displayedDoctors.map((doctor) => (
-          <Col span={8} xs={24} sm={24} lg={8} key={doctor._id}>
-            <Doctor doctor={doctor} />
+        {
+          doctors.length > 0 ?  doctors.map((doctor) => (
+            <Col span={8} xs={24} sm={24} lg={8} key={doctor._id}>
+              <Doctor doctor={doctor} />
+              <br />
+            </Col>
+          )) 
+        
+         : (
+          <Col span={24}>
+            <p>No doctors found</p>
           </Col>
-        ))}
-      </Row>
+        )}
+              </Row>
     </Layout>
   );
 }

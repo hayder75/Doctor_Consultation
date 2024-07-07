@@ -27,6 +27,33 @@ function DoctorsList() {
     }
   };
 
+  const unBlockDoctorStatus = async (record, status)=>{
+    try {
+      dispatch(showLoading());
+      const resposne = await axios.post(
+        "/api/admin/unblock-doctor-account",
+        { doctorId: record._id, userId: record.userId, status: status },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      dispatch(hideLoading());
+      if (resposne.data.success) {
+        toast.success(resposne.data.message);
+        getDoctorsData();
+      }
+    } catch (error) {
+      toast.error('Error changing doctor account status');
+      dispatch(hideLoading());
+    }
+  }
+  useEffect(() => {
+    getDoctorsData();
+  }, []);
+
+
   const changeDoctorStatus = async (record, status) => {
     try {
       dispatch(showLoading());
@@ -94,6 +121,13 @@ function DoctorsList() {
               onClick={() => changeDoctorStatus(record, "blocked")}
             >
               Block
+            </h1>
+          )}
+          {record.status === "blocked" && (
+            <h1 className="anchor"
+              onClick={()=>unBlockDoctorStatus(record,"unblocked")}
+            >
+              Unblock
             </h1>
           )}
         </div>

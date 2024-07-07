@@ -1,28 +1,24 @@
-import { Button, Form, Input } from "antd";
-import React from "react";
+import { Button, Form, Input ,Checkbox} from "antd";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { hideLoading, showLoading } from "../redux/alertsSlice";
-import { useAuthContext } from "../context/AuthContext";
 
-function Login() {
+function VerifyResetCode() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { setAuthUser } = useAuthContext();
+  const [showPassword, setShowPassword] = useState(false);
 
   const onFinish = async (values) => {
     try {
       dispatch(showLoading());
-      const response = await axios.post("/api/user/login", values);
+      const response = await axios.post("/api/user/verify-reset-code", values);
       dispatch(hideLoading());
       if (response.data.success) {
         toast.success(response.data.message);
-        localStorage.setItem("token", response.data.data);
-        localStorage.setItem("chat-user", JSON.stringify(response.data.user));
-        setAuthUser(response.data.user);
-        navigate("/");
+        navigate("/login");
       } else {
         toast.error(response.data.message);
       }
@@ -35,29 +31,35 @@ function Login() {
   return (
     <div className="authentication">
       <div className="authentication-form card p-3">
-        <h1 className="card-title">Welcome Back</h1>
+        <h1 className="">Reset Password</h1>
         <Form layout="vertical" onFinish={onFinish}>
           <Form.Item label="Email" name="email">
             <Input placeholder="Email" />
           </Form.Item>
-          <Form.Item label="Password" name="password">
-            <Input placeholder="Password" type="password" />
+          <Form.Item label="Reset Code" name="code">
+            <Input placeholder="Reset Code" />
+          </Form.Item>
+          <Form.Item label="New Password" name="newPassword">
+            <Input.Password
+              placeholder="New Password"
+              type={showPassword ? "text" : "password"}
+            />
+          </Form.Item>
+          <Form.Item>
+            <Checkbox onChange={() => setShowPassword(!showPassword)}>
+              Show Password
+            </Checkbox>
           </Form.Item>
           <Button className="primary-button my-2 full-width-button" htmlType="submit">
-            LOGIN
+            RESET PASSWORD
           </Button>
-          <div className="d-flex justify-content-between mt-2">
-            <Link to="/register" className="anchor">
-              Create Account
-            </Link>
-            <Link to="/forgot" className="anchor">
-              Forgot password?
-            </Link>
-          </div>
+          <Link to="/login" className="anchor mt-2">
+            BACK TO LOGIN
+          </Link>
         </Form>
       </div>
     </div>
   );
 }
 
-export default Login;
+export default VerifyResetCode;

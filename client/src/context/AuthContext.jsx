@@ -8,7 +8,15 @@ export const useAuthContext = () => {
 };
 
 export const AuthContextProvider = ({ children }) => {
-  const [authUser, setAuthUser] = useState(JSON.parse(localStorage.getItem("chat-user")) || null);
+  const [authUser, setAuthUser] = useState(() => {
+    try {
+      const storedUser = localStorage.getItem("chat-user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Error parsing stored user data:", error);
+      return null;
+    }
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -17,7 +25,7 @@ export const AuthContextProvider = ({ children }) => {
         try {
           const response = await axios.post(
             "/api/user/get-user-info-by-id",
-            { token },
+            { userId: localStorage.getItem("userId") },
             {
               headers: {
                 Authorization: `Bearer ${token}`,

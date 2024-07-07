@@ -8,34 +8,67 @@ const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/authMiddleware");
 const Appointment = require("../models/appointmentModel");
 const moment = require("moment");
+const nodemailer = require('nodemailer')
+require('dotenv').config();
 
 
 
 
-router.get("/get-conversations", async (req, res) => {
+router.get('/get-all-users', authMiddleware, async (req, res) => {
   try {
-    const userId = req.body.userId;
-    const user = await User.findById(userId);
+    const users = await User.find({});
+    res.status(200).json(users); // Use res.json for JSON responses
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "Error fetching users",
+      success: false,
+      error,
+    });
+  }
+});
 
-    let conversations = [];
 
-    if (user.isDoctor) {
-      // Fetch conversations where the doctor is a participant
-      conversations = await Conversation.find({ participants: userId })
-        .populate("participants", "firstName lastName")
-        .exec();
-    } else {
-      // Fetch conversations where the user is a participant
-      conversations = await Conversation.find({ participants: userId })
-        .populate("participants", "firstName lastName")
-        .exec();
+router.get('/get-conversations', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.body.userId });
+
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: 'User not found',
+      });
     }
 
-    res.status(200).send({
-      message: "Conversations fetched successfully",
-      success: true,
-      data: conversations,
-    });
+    // Efficiently find conversations where the user is a participant
+    const conversations = await Conversation.find({
+      participants: { $in: [user._id] },
+    }).exec();
+
+    // Filter conversation participant IDs (excluding the current user)
+    const participantIds = conversations.flatMap(conv =>
+      conv.participants.filter(participant => participant.toString() !== user._id.toString())
+    );
+
+    // Fetch all user details for conversation participants
+    const participants = await User.find({ _id: { $in: participantIds } });
+
+    // Transform participants data to match the structure of doctors data
+    const transformedParticipants = participants.map(participant => ({
+      address: participant.address || '',
+      userId: participant._id.toString(),
+      firstName: participant.firstName || '',
+      lastName: participant.lastName || '',
+      phoneNumber: participant.phoneNumber || '',
+      website: participant.website || '',
+      specialization: participant.specialization || '',
+      experience: participant.experience || '',
+      feePerCunsultation: participant.feePerCunsultation || 0,
+      timings: participant.timings || [],
+      status: participant.status || '',
+    }));
+
+    res.status(200).json(transformedParticipants);
   } catch (error) {
     console.log(error);
     res.status(500).send({
@@ -47,30 +80,59 @@ router.get("/get-conversations", async (req, res) => {
 });
 
 
+
+router.get("/get-all-approved-doctor", async (req, res) => {
+  try {
+    const doctors = await Doctor.find({ status: "approved" });
+    res.status(200).json(doctors); // Use res.json for JSON responses
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({
+      message: "Error fetching doctors",
+      success: false,
+      error,
+    });
+  }
+});
+
+
 router.post("/register", async (req, res) => {
   try {
-    const userExists = await User.findOne({ email: req.body.email });
+    const { firstName, lastName, name ,email, password } = req.body;
+
+    // User existence check
+    const userExists = await User.findOne({ email });
     if (userExists) {
       return res
         .status(200)
         .send({ message: "User already exists", success: false });
     }
-    const password = req.body.password;
+
+    // Password hashing
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    req.body.password = hashedPassword;
-    const newuser = new User(req.body);
-    await newuser.save();
+
+    // Create new user
+    const newUser = new User({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+    });
+    await newUser.save();
+
     res
       .status(200)
       .send({ message: "User created successfully", success: true });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res
       .status(500)
       .send({ message: "Error creating user", success: false, error });
   }
 });
+
+
 
 router.post("/login", async (req, res) => {
   try {
@@ -130,6 +192,7 @@ router.post("/get-user-info-by-id", authMiddleware, async (req, res) => {
   }
 });
 
+
 router.post("/apply-doctor-account", authMiddleware, async (req, res) => {
   try {
     const newdoctor = new Doctor({ ...req.body, status: "pending" });
@@ -160,6 +223,7 @@ router.post("/apply-doctor-account", authMiddleware, async (req, res) => {
     });
   }
 });
+
 router.post(
   "/mark-all-notifications-as-seen",
   authMiddleware,
@@ -229,24 +293,7 @@ router.get("/get-all-approved-doctors",authMiddleware, async (req, res) => {
     });
   }
 });
-router.get("/get-all-approved-doctor", async (req, res) => {
-  try {
-    const doctors = await Doctor.find({ status: "approved" });
-    // res.status(200).send({
-    //   message: "Doctors fetched successfully",
-    //   success: true,
-    //   data: doctors,
-    // });
-    res.status(200).json(doctors)
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      message: "Error applying doctor account",
-      success: false,
-      error,
-    });
-  }
-});
+
 
 router.post("/book-appointment", authMiddleware, async (req, res) => {
   try {
@@ -381,7 +428,7 @@ router.get("/search", authMiddleware, async (req, res) => {
       return res.status(400).send('Query parameter "q" is required');
     }
 
-    const doctor = await Doctor.findOne({
+    const doctor = await Doctor.find({
       $or: [
         { firstName: { $regex: q, $options: "i" } },
         { lastName: { $regex: q, $options: "i" } },
@@ -425,6 +472,100 @@ router.get("/me", authMiddleware, async (req, res) => {
     res
       .status(500)
       .send({ message: "Error fetching user data", success: false, error });
+  }
+});
+
+
+// mail 
+
+router.post('/forgot-password', async (req, res) => {
+  try {
+    console.log('Received request for forgot password');
+
+    const oldUser = await User.findOne({ email: req.body.email });
+    if (!oldUser) {
+      return res.status(200).send({ message: "User does not exist", success: false });
+    }
+
+    // Generate a random 6-digit code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    console.log('Generated reset code:', resetCode);
+
+    // Hash the reset code
+    const salt = await bcrypt.genSalt(10);
+    const hashedResetCode = await bcrypt.hash(resetCode, salt);
+   // console.log('Hashed reset code:', hashedResetCode);
+
+    // Save the hashed reset code and set an expiration time (e.g., 20 minutes)
+    oldUser.resetCode = hashedResetCode;
+    oldUser.resetCodeExpires = Date.now() + 20 * 60 * 1000; // 20 minutes from now
+    await oldUser.save();
+    console.log('Reset code saved to user record');
+
+    // Send the code via email
+    const transporter = nodemailer.createTransport({
+      service: 'gmail', // or any other service
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: oldUser.email,
+      subject: 'Password Reset Code',
+      text: `Your password reset code is: ${resetCode}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log('Error sending email:', error);
+        return res.status(500).send({ message: "Error sending email", success: false, error });
+      }
+      console.log('Email sent: ' + info.response);
+      res.status(200).send({ message: "Password reset code has been sent", success: true });
+    });
+  } catch (error) {
+    console.log('Error:', error);
+    res.status(500).send({ message: "Something went wrong", success: false, error });
+  }
+});
+module.exports=router;
+router.post("/verify-reset-code", async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+
+    const oldUser = await User.findOne({ email: email });
+    if (!oldUser) {
+      return res.json({ status: "User does not exist" });
+    }
+
+    // Check if the code is expired
+    if (Date.now() > oldUser.resetCodeExpires) {
+      return res.status(400).send({ message: "Reset code has expired", success: false });
+    }
+
+    // Verify the reset code
+    const isMatch =  bcrypt.compare(code, oldUser.resetCode);
+    if (!isMatch) {
+      return res.status(400).send({ message: "Invalid reset code", success: false });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the user's password and clear the reset code
+    oldUser.password = hashedPassword;
+    oldUser.resetCode = undefined;
+    oldUser.resetCodeExpires = undefined;
+    await oldUser.save();
+
+    res.status(200).send({ message: "Password has been reset successfully", success: true });
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ message: "Something went wrong", error });
   }
 });
 

@@ -76,6 +76,45 @@ router.post(
   }
 );
 
+router.post(
+  "/unblock-doctor-account",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const { doctorId } = req.body;
 
+      // Find the doctor by ID and update the status to "approved" or any appropriate status
+      const doctor = await Doctor.findByIdAndUpdate(doctorId, {
+        status: "approved",
+      });
+
+      // Find the associated user and update their information
+      const user = await User.findOne({ _id: doctor.userId });
+      user.isDoctor = true; // Update as per your requirements
+      await user.save();
+
+      // Send a notification to the user if needed
+      const unseenNotifications = user.unseenNotifications;
+      unseenNotifications.push({
+        type: "doctor-unblocked",
+        message: "Your doctor account has been unblocked",
+        onClickPath: "/notifications",
+      });
+
+      res.status(200).send({
+        message: "Doctor unblocked successfully",
+        success: true,
+        data: doctor,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).send({
+        message: "Error unblocking doctor account",
+        success: false,
+        error,
+      });
+    }
+  }
+);
 
 module.exports = router;

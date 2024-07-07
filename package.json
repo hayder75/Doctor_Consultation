@@ -26,8 +26,12 @@
     "moment": "^2.29.3",
     "mongoose": "^6.4.0",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.14",
     "nodemon": "^2.0.16",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5"
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^6.4.15"
   }
 }

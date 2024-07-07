@@ -33,7 +33,7 @@ function Userslist() {
   const columns = [
     {
       title: "Name",
-      dataIndex: "name",
+      dataIndex: "firstName",
     },
     {
       title: "Email",
@@ -49,7 +49,7 @@ function Userslist() {
       dataIndex: "actions",
       render: (text, record) => (
         <div className="d-flex">
-          <h1 className="anchor">Block</h1>
+          <h1 className="anchor"></h1>
         </div>
       ),
     },

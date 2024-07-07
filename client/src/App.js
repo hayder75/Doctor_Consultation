@@ -18,8 +18,10 @@ import Profile from "./pages/Doctor/Profile";
 import BookAppointment from "./pages/BookAppointment";
 import Appointments from "./pages/Appointments";
 import ChatPage from "./pages/Chatpage";
-
+import Appp from "./pages/Homee/Appp";
+import ForgotPassword from "./pages/ForgotPassword";
 import DoctorAppointments from "./pages/Doctor/DoctorAppointments";
+import VerifyResetCode from "./pages/VerifyResetCode";
 function App() {
   const { loading } = useSelector((state) => state.alerts);
   return (
@@ -51,7 +53,7 @@ function App() {
           path="/"
           element={
             <PublicRoute>
-              <LandingPage />
+              <Appp />
             </PublicRoute>
           }
         /> */}
@@ -63,6 +65,22 @@ function App() {
             </PublicRoute>
           }
         />
+         <Route
+          path="/forgot"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          } />
+          <Route 
+           path="/verify-reset-code"
+
+           element={
+            <PublicRoute>
+              <VerifyResetCode />
+            </PublicRoute>
+           }
+           />
         <Route
           path="/register-doctor"
           element={

@@ -2,9 +2,13 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    firstName: {
       type: String,
-      required: true,
+      required: true, // Default value for firstName
+    },
+    lastName: {
+      type: String,
+      required: true,// Default value for lastName
     },
     email: {
       type: String,
@@ -14,6 +18,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    resetCode: { type: String },
+    resetCodeExpires: { type: Date },
     isDoctor: {
       type: Boolean,
       default: false,

@@ -13,6 +13,10 @@ function Doctor({ doctor }) {
       </h1>
       <hr />
       <p>
+        <b>Field Specialization : </b>
+        {doctor.specialization}
+      </p>
+      <p>
         <b>Phone Number : </b>
         {doctor.phoneNumber}
       </p>

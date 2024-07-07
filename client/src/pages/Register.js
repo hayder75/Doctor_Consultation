@@ -31,13 +31,38 @@ function Register() {
       <div className="authentication-form card p-3">
         <h1 className="card-title">Nice To Meet U</h1>
         <Form layout="vertical" onFinish={onFinish}>
-          <Form.Item label="Name" name="name">
-            <Input placeholder="Name" />
+          <Form.Item
+            label="First Name"
+            name="firstName"
+            rules={[
+              { required: true, message: "Please enter your first name" },
+            ]}
+          >
+            <Input placeholder="First Name" />
           </Form.Item>
-          <Form.Item label="Email" name="email">
-            <Input placeholder="Email" />
+
+          <Form.Item label="Last Name" name="lastName"
+          rules={[
+            { required: true, message: "Please enter your first name" },
+          ]}>
+            <Input placeholder="Last Name" />
           </Form.Item>
-          <Form.Item label="Password" name="password">
+          <Form.Item label="Email" name="email"
+          rules={[
+            { required: true, message: "Please enter your first name" },
+          ]}>
+            <Input placeholder="user@example.com" />
+          </Form.Item>
+          <Form.Item label="Password" name="password"
+          rules={[
+            { required: true, message: "Please enter your first name" },
+          ]}>
+            <Input placeholder="Password" type="password" />
+          </Form.Item>
+          <Form.Item label="Confim Password" name="password"
+          rules={[
+            { required: true, message: "Please enter your first name" },
+          ]}>
             <Input placeholder="Password" type="password" />
           </Form.Item>
 
@@ -49,7 +74,7 @@ function Register() {
           </Button>
 
           <Link to="/login" className="anchor mt-2">
-            CLICK HERE TO LOGIN
+            Click here to login
           </Link>
         </Form>
       </div>
