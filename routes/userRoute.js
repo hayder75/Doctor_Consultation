@@ -83,8 +83,19 @@ router.get('/get-conversations', authMiddleware, async (req, res) => {
 
 router.get("/get-all-approved-doctor", async (req, res) => {
   try {
+    // Fetch approved doctors
     const doctors = await Doctor.find({ status: "approved" });
-    res.status(200).json(doctors); // Use res.json for JSON responses
+
+    // Fetch the corresponding user data for each approved doctor
+    const users = await Promise.all(
+      doctors.map(async (doctor) => {
+        const user = await User.findById(doctor.userId);
+        return user;
+      })
+    );
+
+    // Respond with the user data
+    res.status(200).json(users); // Use res.json for JSON responses
   } catch (error) {
     console.log(error);
     res.status(500).send({

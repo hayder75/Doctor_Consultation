@@ -125,7 +125,9 @@ function Layout({ children }) {
               onClick={() => {
                 localStorage.removeItem("token");
                 localStorage.clear();
+                // window.location.reload(); // Refresh the page
                 navigate("/login");
+                
               }}
             >
               <i className="ri-logout-circle-line"></i>

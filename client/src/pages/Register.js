@@ -59,12 +59,6 @@ function Register() {
           ]}>
             <Input placeholder="Password" type="password" />
           </Form.Item>
-          <Form.Item label="Confim Password" name="password"
-          rules={[
-            { required: true, message: "Please enter your first name" },
-          ]}>
-            <Input placeholder="Password" type="password" />
-          </Form.Item>
 
           <Button
             className="primary-button my-2 full-width-button"
