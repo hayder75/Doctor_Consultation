@@ -121,13 +121,13 @@ function BookAppointment() {
               <img
                 src="https://thumbs.dreamstime.com/b/finger-press-book-now-button-booking-reservation-icon-online-149789867.jpg"
                 alt=""
-                width="100%"
-                height='400'
+                width="50%"
+                height='50%'
               />
             </Col>
             <Col span={8} sm={24} xs={24} lg={8}>
               <h1 className="normal-text">
-                <b>Timings :</b> {doctor.timings[0]} - {doctor.timings[1]}
+                <b>Timings :</b> {doctor.timings[0]}  {doctor.timings[1]}
               </h1>
               <p>
                 <b>Phone Number : </b>
@@ -142,7 +142,7 @@ function BookAppointment() {
                 {doctor.feePerCunsultation}
               </p>
               <p>
-                <b>Website : </b>
+                <b>Website / Socials link: </b>
                 {doctor.website}
               </p>
               <div className="d-flex flex-column pt-2 mt-2">

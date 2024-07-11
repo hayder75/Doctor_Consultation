@@ -5,7 +5,8 @@ import { Col, Row, Input } from "antd";
 import Doctor from "../components/Doctor";
 import { useDispatch } from "react-redux";
 import { showLoading, hideLoading } from "../redux/alertsSlice";
-
+import { Typography } from "antd";
+import { SmileOutlined } from "@ant-design/icons";
 const { Search } = Input;
 
 function Home() {
@@ -63,14 +64,50 @@ function Home() {
   };
 
   const chatUser = JSON.parse(localStorage.getItem("chat-user"));
-
+  const { Title, Paragraph, Text } = Typography;
   if (chatUser?.isDoctor) {
     return (
       <Layout>
-        <p>You do not have access to view the list of doctors.</p>
+        <div style={{ maxWidth: 600, margin: "20px auto", textAlign: "center", padding: 20, borderRadius: 10, boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
+          <SmileOutlined style={{ fontSize: '48px', color: '#1890ff' }} />
+          <Title level={2} style={{ marginTop: 16 }}>
+            Hello Doctor,
+          </Title>
+          <Paragraph style={{ fontSize: "18px", color: "#555" }}>
+            Welcome back! You can check your appointments in the <Text strong>Appointment</Text> tab.
+          </Paragraph>
+          <Paragraph style={{ fontSize: "16px", marginTop: 16 }}>
+            <Text type="secondary">
+              We are here to help you manage your schedule efficiently and ensure you never miss an appointment.
+            </Text>
+          </Paragraph>
+        </div>
       </Layout>
     );
   }
+
+  if (chatUser?.isAdmin) {
+    return (
+      <Layout>
+        <div style={{ maxWidth: 600, margin: "20px auto", textAlign: "center", padding: 20, borderRadius: 10, boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}>
+          <SmileOutlined style={{ fontSize: '48px', color: '#1890ff' }} />
+          <Title level={2} style={{ marginTop: 16 }}>
+            Hello Admin,
+          </Title>
+          <Paragraph style={{ fontSize: "18px", color: "#555" }}>
+            Welcome back! You can operate in the <Text strong>Tabs</Text> provided
+          </Paragraph>
+          <Paragraph style={{ fontSize: "16px", marginTop: 16 }}>
+            <Text type="secondary">
+             
+            </Text>
+          </Paragraph>
+        </div>
+      </Layout>
+    );
+  }
+
+
 
   return (
     <Layout>

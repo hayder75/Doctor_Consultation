@@ -1,49 +1,55 @@
 /* DeleteAccountButton.css */
 
 .delete-account-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f0f2f5;
-  }
-  
-  .delete-account-content {
-    background: #fff;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    max-width: 500px;
-    width: 100%;
-  }
-  
-  .delete-account-title {
-    margin-bottom: 24px;
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .delete-account-description {
-    margin-bottom: 24px;
-    font-size: 16px;
-    color: #595959;
-  }
-  
-  .delete-account-button {
-    width: 100%;
-    background-color: #ff4d4f;
-    border: none;
-    color: #fff;
-    font-size: 16px;
-    font-weight: bold;
-    padding: 10px 0;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .delete-account-button:hover {
-    background-color: #ff7875;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background: linear-gradient(135deg, #f0f2f5, #c4c4c4);
+}
+
+.delete-account-content {
+  background: #fff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.delete-account-content:hover {
+  transform: scale(1.05);
+}
+
+.delete-account-title {
+  margin-bottom: 24px;
+  font-size: 32px;
+  font-weight: bold;
+  color: #ff4d4f;
+}
+
+.delete-account-description {
+  margin-bottom: 24px;
+  font-size: 18px;
+  color: #595959;
+}
+
+.delete-account-button {
+  width: 100%;
+  background-color: #ff4d4f;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 0 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.delete-account-button:hover {
+  background-color: #ff7875;
+  transform: scale(1.05);
+}
