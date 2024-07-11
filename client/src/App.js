@@ -22,6 +22,7 @@ import Appp from "./pages/Homee/Appp";
 import ForgotPassword from "./pages/ForgotPassword";
 import DoctorAppointments from "./pages/Doctor/DoctorAppointments";
 import VerifyResetCode from "./pages/VerifyResetCode";
+import DeleteAccountButton from "./pages/Delete";
 function App() {
   const { loading } = useSelector((state) => state.alerts);
   return (
@@ -170,6 +171,15 @@ function App() {
           element={
             <ProtectedRoute>
               <DoctorAppointments />
+            </ProtectedRoute>
+          }
+        />
+
+<Route
+          path="/delete"
+          element={
+            <ProtectedRoute>
+              <DeleteAccountButton />
             </ProtectedRoute>
           }
         />

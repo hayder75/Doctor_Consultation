@@ -8,13 +8,15 @@ import reportWebVitals from "./reportWebVitals";
 import store from "./redux/store";
 import { AuthContextProvider } from "./context/AuthContext";
 import { UserProvider } from "./context/UserTypeContext";
-
+import {SocketContextProvider} from "./context/SocketContext";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>
     <AuthContextProvider>
     <UserProvider>
-       <App />
+      <SocketContextProvider>
+      <App />
+      </SocketContextProvider>
      </UserProvider>
     </AuthContextProvider>
   </Provider>

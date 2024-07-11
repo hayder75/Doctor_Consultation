@@ -1,12 +1,17 @@
 import React, { useState } from "react";
 import { Link } from "react-scroll";
+
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import Contact from "../models/Contact";
 import { useNavigate } from "react-router-dom";
 const Navbar = () => {
+
   const [menu, setMenu] = useState(false);
+
   const [showForm, setShowForm] = useState(false);
+  
   const navigate = useNavigate();
+
   const handleChange = () => {
     setMenu(!menu);
   };
@@ -23,22 +28,23 @@ const Navbar = () => {
   const closeForm = () => {
     setShowForm(false);
   };
+
   const handleLoginClick = () => {
     navigate("/login");
     closeMenu();
   };
 
   return (
-    <div className=" fixed w-full z-10 text-white">
+    <div className=" fixed w-full z-10 text-black">
       <div>
         <div className=" flex flex-row justify-between p-5 md:px-32 px-5 bg-backgroundColor shadow-[rgba(0,_0,_0,_0.24)_0px_3px_8px]">
           <div className=" flex flex-row items-center cursor-pointer">
             <Link to="home" spy={true} smooth={true} duration={500}>
-              <h1 className=" text-2xl font-semibold">Bishoftu Hospital</h1>
+              <h1 className=" text-2xl font-semibold">B</h1>
             </Link>
           </div>
 
-          <nav className=" hidden lg:flex flex-row items-center text-lg font-medium gap-8">
+          <nav className=" hidden text-black lg:flex flex-row items-center text-lg font-medium gap-8">
             <Link
               to="homee"
               spy={true}
@@ -48,30 +54,13 @@ const Navbar = () => {
             >
               Home
             </Link>
-            <Link
-              to="about"
-              spy={true}
-              smooth={true}
-              duration={500}
-              className=" hover:text-hoverColor transition-all cursor-pointer"
-            >
-              About Us
-            </Link>
-            <Link
-              to="services"
-              spy={true}
-              smooth={true}
-              duration={500}
-              className=" hover:text-hoverColor transition-all cursor-pointer"
-            >
-              Services
-            </Link>
+          
             
             <div
             className="hover:text-hoverColor transition-all cursor-pointer"
             onClick={handleLoginClick}
           >
-            Dashboard Login
+           Signin/Signup
           </div>
           </nav>
 
@@ -102,43 +91,18 @@ const Navbar = () => {
           >
             Home
           </Link>
-          <Link
-            to="about"
-            spy={true}
-            smooth={true}
-            duration={500}
-            className=" hover:text-hoverColor transition-all cursor-pointer"
-            onClick={closeMenu}
-          >
-            About Us
-          </Link>
-          <Link
-            to="services"
-            spy={true}
-            smooth={true}
-            duration={500}
-            className=" hover:text-hoverColor transition-all cursor-pointer"
-            onClick={closeMenu}
-          >
-            Services
-          </Link>
-          <Link
-            to="doctors"
-            spy={true}
-            smooth={true}
-            duration={500}
-            className=" hover:text-hoverColor transition-all cursor-pointer"
-            onClick={closeMenu}
-          >
-            Doctors
-          </Link>
           
-          <div
-            className="hover:text-hoverColor transition-all cursor-pointer"
-            onClick={handleLoginClick}
+         
+          <Link
+            to="login"
+            spy={true}
+            smooth={true}
+            duration={500}
+            className=" hover:text-hoverColor transition-all cursor-pointer"
+            onClick={closeMenu}
           >
-            Dashboard Login
-          </div>
+            Home
+          </Link>
          
 
         

@@ -1,21 +1,22 @@
-// const http = require('http');
-// const express = require('express');
-// const { Server } = require('socket.io');
+const http = require('http');
+const express = require('express');
+ const { Server } = require('socket.io');
 // //const Message = require('./models/messageModel'); // Assuming Message is a model
 // const User = require('./models/userModel');
-// const app = express();
-// const server = http.createServer(app);
-// const io = new Server(server, {
-//     cors: {
-//         origin: "http://localhost:3000",
-//         methods: ["GET", "POST"],
-//     },
-// });
+const app = express();
+
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",
+        methods: ["GET", "POST"],
+    },
+});
 
 // const userSocketMap = {}; // {userId: socketId}
 
-// io.on("connection", (socket) => {
-//     console.log("a user connected", socket.id);
+io.on("connection", (socket) => {
+    console.log("a user connected", socket.id);
 
 //     const userId = socket.handshake.query.userId;
 //     if (userId !== "undefined") userSocketMap[userId] = socket.id;
@@ -32,10 +33,10 @@
 //         io.to(roomId).emit("receiveMessage", newMessage);
 //     });
 
-//     socket.on("disconnect", () => {
-//         console.log("user disconnected", socket.id);
-//         delete userSocketMap[userId];
-//     });
-// });
+    socket.on("disconnect", () => {
+        console.log("user disconnected", socket.id);
+        // delete userSocketMap[userId];
+    });
+});
 
-// module.exports = { app, server };
+module.exports = { app , io ,server};

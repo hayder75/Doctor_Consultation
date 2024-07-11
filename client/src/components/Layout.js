@@ -33,6 +33,11 @@ function Layout({ children }) {
       path: "/chat",
       icon: "ri-chat-1-line",
     },
+    {
+      name: "Delete",
+      path: "/delete",
+      icon: "ri-delete-bin-line",
+    },
   ];
 
   const doctorMenu = [
@@ -55,6 +60,11 @@ function Layout({ children }) {
       name: "Chat",
       path: "/chat",
       icon: "ri-chat-1-line",
+    },
+    {
+      name: "Delete",
+      path: "/delete",
+      icon: "ri-delete-bin-line",
     },
   ];
 

@@ -10,7 +10,7 @@ const Conversations = () => {
 				<Conversation
 					key={conversation._id}
 					conversation={conversation}
-					emoji={getRandomEmoji()}
+					//emoji={getRandomEmoji()}
 					lastIdx={idx === conversations.length - 1}
 				/>
 			))}

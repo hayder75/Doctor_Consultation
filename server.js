@@ -4,15 +4,16 @@ const path = require("path");
 require("dotenv").config();
 const dbConfig = require("./config/dbConfig");
 const fileUpload = require('express-fileupload');
-
+const {app,server} = require('./socket')
 // Initialize express app
-const app = express();
+// const app = express();
 
 // Middleware to enable CORS
 app.use(cors());
 
 // Middleware to parse JSON requests
 app.use(express.json());
+
 
 app.use(fileUpload({
   limits: { fileSize: 5242880 }, // 5MB limit (optional)

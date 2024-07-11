@@ -8,7 +8,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import DoctorForm from "../../components/DoctorForm";
 import moment from "moment";
-
+import DeleteAccountButton from "../Delete"
 function Profile() {
   const { user } = useSelector((state) => state.user);
   const params = useParams();
@@ -80,7 +80,9 @@ function Profile() {
       <h1 className="page-title">Doctor Profile</h1>
       <hr />
       {doctor && <DoctorForm onFinish={onFinish} initivalValues={doctor} />}
+     
     </Layout>
+    
   );
 }
 

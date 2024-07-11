@@ -255,38 +255,41 @@ router.post("/register", async (req, res) => {
 
 
 
-router.post("/login", async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
     if (!user) {
-      return res
-        .status(200)
-        .send({ message: "User does not exist", success: false });
+      return res.status(200).send({ message: "User does not exist", success: false });
     }
-    const isMatch = await bcrypt.compare(req.body.password, user.password);
-    if (!isMatch) {
-      return res
-        .status(200)
-        .send({ message: "Password is incorrect", success: false });
-    } else {
-      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "1d",
+    // Check if the user is locked out
+    if (user.lockoutUntil && user.lockoutUntil > Date.now()) {
+      const remainingTime = Math.ceil((user.lockoutUntil - Date.now()) / 1000); // time in seconds
+      return res.status(403).send({ 
+        message:` Account locked. Try again in ${remainingTime} seconds.`,
+        success: false,
+        remainingTime 
       });
-      res
-        .status(200)
-        .send({
-          message: "Login successful",
-          success: true,
-          data: token,
-          userId: user._id,
-        });
-      //.json({ userId: user._id, name: user.name });
     }
+    // Compare passwords using the instance method
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      user.loginAttempts += 1;
+      if (user.loginAttempts >= 5) {
+        user.lockoutUntil = Date.now() + 60 * 60 * 1000; // 1 hour
+      }
+      await user.save();
+      return res.status(200).send({ message: "Password is incorrect", success: false });
+    }
+    // Reset login attempts and lockout
+    user.loginAttempts = 0;
+    user.lockoutUntil = undefined;
+    await user.save();
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
+    res.status(200).send({ message: "Login successful", success: true, data: token ,user });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .send({ message: "Error logging in", success: false, error });
+    res.status(500).send({ message: "Error logging in", success: false, error });
   }
 });
 
@@ -664,5 +667,23 @@ router.post("/verify-reset-code", async (req, res) => {
     res.status(500).send({ message: "Something went wrong", error });
   }
 });
+
+
+router.delete('/delete-account', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.body.userId; // Assuming the user ID is available in req.user
+
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      return res.status(404).send({ message: "User not found", success: false });
+    }
+
+    res.status(200).send({ message: "User account deleted successfully", success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Something went wrong", success: false, error });
+  }
+});
+
 
 module.exports = router;

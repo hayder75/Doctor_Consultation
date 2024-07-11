@@ -37,7 +37,7 @@ function DoctorForm({ onFinish, initivalValues }) {
         </Col>
         <Col span={8} xs={24} sm={24} lg={8}>
           <Form.Item required label="Website" name="website" rules={[{ required: true }]}>
-            <Input placeholder="Website" />
+            <Input placeholder="Website or any Social link" />
           </Form.Item>
         </Col>
         <Col span={8} xs={24} sm={24} lg={8}>
@@ -87,6 +87,8 @@ function DoctorForm({ onFinish, initivalValues }) {
         </Button>
       </div>
     </Form>
+
+    
   );
 }
 

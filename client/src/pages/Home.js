@@ -37,7 +37,7 @@ function Home() {
 
   const handleSearch = async (value) => {
     if (!value) {
-     getData()
+      getData();
       return;
     }
     try {
@@ -49,15 +49,12 @@ function Home() {
         },
       });
       dispatch(hideLoading());
-       console.log(response)
       if (response.data.success) {
         setDoctors(response.data.data);
         console.log("Search Results:", response.data.data);
-        
       } else {
         setSearchResults([]);
       }
-     // console.log("Search Results:", response.data.data); // Debugging log
     } catch (error) {
       dispatch(hideLoading());
       console.error("Error searching for doctors:", error);
@@ -65,17 +62,19 @@ function Home() {
     }
   };
 
- 
+  const chatUser = JSON.parse(localStorage.getItem("chat-user"));
 
-  // useEffect(() => {
-  //   console.log("Doctors:", doctors);
-  //   console.log("Search Results:", searchResults);
-  //   console.log("Displayed Doctors:", displayedDoctors);
-  // }, [doctors, searchResults, displayedDoctors]);
-//console.log(doctors)
+  if (chatUser?.isDoctor) {
+    return (
+      <Layout>
+        <p>You do not have access to view the list of doctors.</p>
+      </Layout>
+    );
+  }
+
   return (
-    <Layout> 
-      <div style={{ padding: '20px' }}>
+    <Layout>
+      <div style={{ padding: "20px" }}>
         <Search
           placeholder="Search for doctors by name or specialization"
           enterButton="Search"
@@ -84,20 +83,19 @@ function Home() {
         />
       </div>
       <Row gutter={20}>
-        {
-          doctors.length > 0 ?  doctors.map((doctor) => (
+        {doctors.length > 0 ? (
+          doctors.map((doctor) => (
             <Col span={8} xs={24} sm={24} lg={8} key={doctor._id}>
               <Doctor doctor={doctor} />
               <br />
             </Col>
-          )) 
-        
-         : (
+          ))
+        ) : (
           <Col span={24}>
             <p>No doctors found</p>
           </Col>
         )}
-              </Row>
+      </Row>
     </Layout>
   );
 }
