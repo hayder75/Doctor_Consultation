@@ -5,13 +5,123 @@ const Doctor = require("../models/doctorModel");
 const Conversation = require("../models/conversationModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 const authMiddleware = require("../middlewares/authMiddleware");
 const Appointment = require("../models/appointmentModel");
 const moment = require("moment");
 const nodemailer = require('nodemailer')
+const multer = require('multer');
+const fileUpload = require('express-fileupload');
 require('dotenv').config();
 
 
+// Set up multer for file storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage });
+
+
+router.post('/apply-doctor-account', authMiddleware, async (req, res) => {
+  try {
+    if (!req.files || !req.files.cv) {
+      console.log('Error uploading');
+      return res.status(400).json({ message: 'CV upload failed' });
+    }
+
+    const cvFile = req.files.cv;
+    const uploadPath = path.join(__dirname, '..', 'uploads', `${Date.now()}-${cvFile.name}`);
+    console.log('Upload Path:', uploadPath); // Debugging: Log upload path
+
+    cvFile.mv(uploadPath, async (err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ message: 'CV upload failed', error: err });
+      }
+
+      const cvPath = path.basename(uploadPath);
+      console.log('CV Path:', cvPath); // Debugging: Log CV path
+
+      const { firstName, lastName, phoneNumber, website, address, specialization, experience, feePerCunsultation, timings } = req.body;
+
+      const newDoctor = new Doctor({
+        ...req.body,
+        status: 'pending',
+        cvPath,
+      });
+
+      await newDoctor.save();
+      const adminUser = await User.findOne({ isAdmin: true });
+
+      if (!adminUser) {
+        return res.status(500).json({ message: 'Admin user not found' });
+      }
+
+      const unseenNotifications = adminUser.unseenNotifications || [];
+      unseenNotifications.push({
+        type: 'new-doctor-request',
+        message: `${newDoctor.firstName} ${newDoctor.lastName} has applied for a doctor account`,
+        data: {
+          doctorId: newDoctor._id,
+          name: `${newDoctor.firstName} ${newDoctor.lastName}`,
+        },
+        onClickPath: '/admin/doctorslist',
+      });
+
+      await User.findByIdAndUpdate(adminUser._id, { unseenNotifications });
+
+      res.status(200).json({
+        success: true,
+        message: 'Doctor account applied successfully',
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: 'Error applying doctor account',
+      error: process.env.NODE_ENV === 'production' ? 'Server error' : error.message,
+    });
+  }
+});
+
+
+// router.post("/apply-doctor-account", authMiddleware, async (req, res) => {
+//   try {
+//     const newdoctor = new Doctor({ ...req.body, status: "pending" });
+//     await newdoctor.save();
+//     const adminUser = await User.findOne({ isAdmin: true });
+
+//     const unseenNotifications = adminUser.unseenNotifications;
+//     unseenNotifications.push({
+//       type: "new-doctor-request",
+//       message: `${newdoctor.firstName} ${newdoctor.lastName} has applied for a doctor account`,
+//       data: {
+//         doctorId: newdoctor._id,
+//         name: newdoctor.firstName + " " + newdoctor.lastName,
+//       },
+//       onClickPath: "/admin/doctorslist",
+//     });
+//     await User.findByIdAndUpdate(adminUser._id, { unseenNotifications });
+//     res.status(200).send({
+//       success: true,
+//       message: "Doctor account applied successfully",
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({
+//       message: "Error applying doctor account",
+//       success: false,
+//       error,
+//     });
+//   }
+// });
 
 
 router.get('/get-all-users', authMiddleware, async (req, res) => {
@@ -203,37 +313,12 @@ router.post("/get-user-info-by-id", authMiddleware, async (req, res) => {
   }
 });
 
+// apply with pdf
 
-router.post("/apply-doctor-account", authMiddleware, async (req, res) => {
-  try {
-    const newdoctor = new Doctor({ ...req.body, status: "pending" });
-    await newdoctor.save();
-    const adminUser = await User.findOne({ isAdmin: true });
 
-    const unseenNotifications = adminUser.unseenNotifications;
-    unseenNotifications.push({
-      type: "new-doctor-request",
-      message: `${newdoctor.firstName} ${newdoctor.lastName} has applied for a doctor account`,
-      data: {
-        doctorId: newdoctor._id,
-        name: newdoctor.firstName + " " + newdoctor.lastName,
-      },
-      onClickPath: "/admin/doctorslist",
-    });
-    await User.findByIdAndUpdate(adminUser._id, { unseenNotifications });
-    res.status(200).send({
-      success: true,
-      message: "Doctor account applied successfully",
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      message: "Error applying doctor account",
-      success: false,
-      error,
-    });
-  }
-});
+
+
+
 
 router.post(
   "/mark-all-notifications-as-seen",
@@ -471,7 +556,7 @@ router.get("/search", authMiddleware, async (req, res) => {
 
 router.get("/me", authMiddleware, async (req, res) => {
   try {
-    const user = await Doctor.findOne({ userId: req.body.userId });
+    const user = await User.findOne({ userId: req.body.userId });
     if (!user) {
       return res
         .status(404)

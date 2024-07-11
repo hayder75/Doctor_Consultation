@@ -12,15 +12,15 @@ const useGetConversations = () => {
         const token = localStorage.getItem('token'); 
 		const chat = localStorage.getItem('your_chat_key');  // Replace with actual key
 		// Replace with actual key
-		console.log('Token:', token)
-		console.log('Token:', chat)
+		// console.log('Token:', token)
+		// console.log('Token:', chat)
         if (!token) {
           // Handle missing token scenario (e.g., redirect to login)
           console.error('Missing token in local storage');
           return;
         }
 
-        const response = await axios.get("/api/user/get-all-users", {
+        const response = await axios.get("/api/user/get-conversations", {
           headers: {
             Authorization: `Bearer ${token}` // Add token to Authorization header
           }

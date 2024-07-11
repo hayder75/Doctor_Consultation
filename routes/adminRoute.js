@@ -59,6 +59,9 @@ router.post(
       });
       user.isDoctor = status === "approved" ? true : false;
       await user.save();
+      const subject = 'Doctor Account Status Update';
+       const message = Hello `${user.name},\n\nYour doctor account status has been ${status}.\n\nBest regards,\nYour Team `;
+       await sendEmail(user.email, subject, message);
 
       res.status(200).send({
         message: "Doctor status updated successfully",

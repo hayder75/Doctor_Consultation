@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+
 const doctorSchema = new mongoose.Schema(
   {
     userId: {
@@ -37,14 +38,19 @@ const doctorSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    timings : {
+    timings: {
       type: Array,
       required: true,
     },
     status: {
       type: String,
       default: "pending",
-    }
+    },
+    cvPath: {
+      type: String, // New field to store the file path of the CV
+      required: true,
+      
+    },
   },
   {
     timestamps: true,

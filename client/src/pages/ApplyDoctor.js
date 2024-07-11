@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, Row, TimePicker } from "antd";
+import { Button, Col, Form, Input, Row, TimePicker, Upload } from "antd";
 import React, { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +17,6 @@ function ApplyDoctor() {
 
   const getData = async () => {
     try {
-      
       const response = await axios.get("http://localhost:500/api/users/me", {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
@@ -39,19 +38,29 @@ function ApplyDoctor() {
   const onFinish = async (values) => {
     try {
       dispatch(showLoading());
+      const formData = new FormData();
+      formData.append("userId", user._id);
+      formData.append("firstName", values.firstName);
+      formData.append("lastName", values.lastName);
+      formData.append("phoneNumber", values.phoneNumber);
+      formData.append("website", values.website);
+      formData.append("address", values.address);
+      formData.append("specialization", values.specialization);
+      formData.append("experience", values.experience);
+      formData.append("feePerCunsultation", values.feePerCunsultation);
+      formData.append("timings", JSON.stringify([
+        moment(values.timings[0]).format("HH:mm"),
+        moment(values.timings[1]).format("HH:mm"),
+      ]));
+      formData.append("cv", values.cv[0].originFileObj);
+
       const response = await axios.post(
         "/api/user/apply-doctor-account",
-        {
-          ...values,
-          userId: user._id,
-          timings: [
-            moment(values.timings[0]).format("HH:mm"),
-            moment(values.timings[1]).format("HH:mm"),
-          ],
-        },
+        formData,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
